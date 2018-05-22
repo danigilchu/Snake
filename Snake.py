@@ -5,6 +5,9 @@ Created on Sat May 19 11:45:24 2018
 """
 from tkinter import *
 from random import *
+import os
+from time import *
+from decimal import Decimal
 # ========== GLOBAL variables ==========
 Cx, Cy = 500, 500 # Dimensions Canvas
 
@@ -18,9 +21,11 @@ flag = False
 
 # Mouvement constant
 def moveConst():
-    global x1, y1, dx, dy, flag
+    global x1, y1, dx, dy, flag,score
     xF, yF = x1, y1
     x1, y1 = x1 + dx, y1 + dy
+    score=clock()
+    print (score)
     # Passe a l'autre cote
     if x1 > Cx:
         x1 = 0
@@ -33,12 +38,16 @@ def moveConst():
     can.coords(snake, x1, y1, x1 + Size, y1 + Size)
     if flag:
         fen.after(100, moveConst)
+
         if len(body) > 0:
             follow(xF, yF)
 # Arreter mouvement constant
 def stop():
     global flag
     flag = False
+    if flag == False:
+        mylabel2 = Label(fen, text=str(round(score,0)*10))
+        mylabel2.pack()
 # Demarrer mouvement constant
 def start():
     global flag,snake
@@ -92,11 +101,8 @@ def creation_pomme():
     pomme=can.create_oval(posx-rayon,posy-rayon,posx+rayon,posy+rayon,
                           fill='red')
     print (posx,posy)
-    #if(posx+10 > x1 or posx-10 == x1 or posy+10 == x1 or posy-10 == x1 ) or flag == False:
-    #if(posx-x1 >= 0 or posx-x1+30<=0 or posy-y1 >=0 or posy-y1+30 <=0) or flag == False:
-##    if x1 == 300:
-##        can.delete(pomme)
-##        creation_pomme()
+    print (pseudo_recupere)
+
 def delPomme(*ignore):
     global pomme
     can.delete()
@@ -108,12 +114,35 @@ def follow(xF, yF):
         can.coords(body[i], xF, yF, xF + Size, yF + Size)
         xF, yF = posP[0], posP[1]
 
+def afficher(event):
+
+    pseudo1=pseudo.get()
+    chaine.configure(text = "Bienvenu " + str(pseudo1))
+    donnees=open("donnees.txt","w")
+    donnees.write(pseudo.get())
+    donnees.close()
+    return pseudo1
+    
 # ========== MAIN PROGRAM ==========
+
+fenetre = Tk()
+pseudo = Entry(fenetre)
+pseudo.bind("<Return>", afficher)
+
+chaine = Label(fenetre)
+
+pseudo.pack()
+chaine.pack()
+
+fenetre.mainloop()
+
 fen = Tk()
 fen.title("Snake")
 
+
 can = Canvas(fen, bg = 'dark grey', height = Cx, width = Cy)
 can.pack(side = LEFT, padx = 5, pady = 5)
+
 
 # SNAKE
 snake = can.create_rectangle(x1, y1, x1 + Size, y1 + Size, width = 2, fill = 'red')
@@ -124,9 +153,8 @@ fen.bind("<Left>", left)
 fen.bind("<Right>", right)
 
 fen.bind("<Tab>", delPomme)
-
 # Creer corps
-##fen.bind("<Tab>", create)
+fen.bind("<Tab>", create)
 
 # Boutons
 btn1 = Button(fen, text='Start', command = start)     # Commencer mouvement
@@ -134,8 +162,15 @@ btn1.pack()
 
 btn2 = Button(fen, text='Stop', command = stop)     # Arreter mouvement
 btn2.pack()
+with open('donnees.txt','r',) as donnees:
+    pseudo_recupere=donnees.read()
+mylabel1 = Label(fen, text=str(pseudo_recupere))
+mylabel1.pack()
+LabelScore = Label(fen, text='Score:')
+LabelScore.pack()
 
-# TODO: Pour quoi ça?
+
+#TODO:
 can.focus_set()
 
 fen.mainloop()
