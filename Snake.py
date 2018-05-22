@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sat May 19 11:45:24 2018
-
-@author: Ignacio Paillalef
+@author: Ignacio Paillalef, Ali mehdi, Daniel Gil
 """
 from tkinter import *
+from random import *
 # ========== GLOBAL variables ==========
 Cx, Cy = 500, 500 # Dimensions Canvas
 
@@ -45,6 +45,7 @@ def start():
     if not flag:
         flag = True
         moveConst()
+        creation_pomme()
 
 # Mouvement Joueur
 def up(*ignore):
@@ -81,7 +82,25 @@ def create(*ignore):
     # UP
     if dy < 0:
         body += [can.create_rectangle(pS[0], pS[1] + Size, pS[2], pS[3] + Size, width = 2, fill = 'orange')]
-
+# Nourriture et le fait de manger
+pomme = []
+def creation_pomme():
+    rayon=10
+    global posx, posy,x1
+    posx=randrange(10,490,1)
+    posy=randrange(10,490,1)
+    pomme=can.create_oval(posx-rayon,posy-rayon,posx+rayon,posy+rayon,
+                          fill='red')
+    print (posx,posy)
+    #if(posx+10 > x1 or posx-10 == x1 or posy+10 == x1 or posy-10 == x1 ) or flag == False:
+    #if(posx-x1 >= 0 or posx-x1+30<=0 or posy-y1 >=0 or posy-y1+30 <=0) or flag == False:
+##    if x1 == 300:
+##        can.delete(pomme)
+##        creation_pomme()
+def delPomme(*ignore):
+    global pomme
+    can.delete()
+    creation_pomme()
 def follow(xF, yF):
     global body
     for i in range(len(body)):
@@ -104,8 +123,10 @@ fen.bind("<Down>", down)
 fen.bind("<Left>", left)
 fen.bind("<Right>", right)
 
+fen.bind("<Tab>", delPomme)
+
 # Creer corps
-fen.bind("<Tab>", create)
+##fen.bind("<Tab>", create)
 
 # Boutons
 btn1 = Button(fen, text='Start', command = start)     # Commencer mouvement
